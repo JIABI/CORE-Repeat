@@ -1,0 +1,80 @@
+{
+  "name": "STATE50_EMPIRICAL_RADIAL_FIXED_RISK_V1",
+  "status": "algorithm_recipe_frozen_new_evaluation_not_started",
+  "development_dataset": "LINCS Cell Painting Pilot1 opened1188",
+  "mean": {
+    "implementation": "opal2.state_biology_kernel.StateBiologyKernelMean",
+    "relation_mode": "state_only",
+    "checkpoint": "epoch50",
+    "parent": "complete frozen A_OLD_GENERIC epoch30",
+    "input": "first-well morphology direction and magnitude; existing legal chemistry/reference information",
+    "state": "FIT-only PCA8 plus log first-well norm",
+    "output": "nine fold-standardized legal log-Cholesky geometry coordinates",
+    "training_recipe": "protocols/historical/STATE_BIOLOGY_PLAN_20260916.md",
+    "current_development_fits": "runs/lincs_state_biology_20260916_v1/folds/fold_{0..4}/arms/STATE50/epoch50.pt",
+    "single_deployment_checkpoint_created": false
+  },
+  "distribution": {
+    "implementation": "opal2.empirical_radial",
+    "arm": "AMP_EMP_LOCAL",
+    "mean_updated": false,
+    "scatter_fit": "REF_FIT only; amplitude-conditional scale from reference residuals",
+    "radial_fit": "DIST_CAL residuals only, independent of mean/scatter fitting",
+    "dimension": 9,
+    "empirical_weight": 0.9,
+    "gaussian_radius_weight": 0.1,
+    "log_radius_kernel": "compact triangular, original declared bandwidth rule",
+    "local_condition": "first-well log amplitude",
+    "effective_neighbor_shrinkage": 20.0,
+    "direction": "uniform sphere in whitened coordinates; an assessed modeling assumption, not a theorem",
+    "scatter_is_not_covariance": true,
+    "reference_recipe": "protocols/historical/EMPIRICAL_RADIAL_PLAN_20260916.md"
+  },
+  "policy": {
+    "score": "expected_gamma - risk_weight * probability_null",
+    "risk_weight": 0.2,
+    "risk_weight_chosen_from_prior_development": true,
+    "new_evaluation_lambda_selection": false,
+    "type": "cohort_fixed_budget_top_k",
+    "integer_extra_well_budget_required": true,
+    "extra_wells_per_action": 2,
+    "k": "min(number_candidates, floor(integer_extra_well_budget/2))",
+    "primary_planned_extra_well_budget": "floor(0.25 * N_declared_campaign)",
+    "ties": "ascending stable object ID",
+    "null_event": "original_gamma <= 0",
+    "positive_event": "original_gamma >= 0.005",
+    "iid_clopper_pearson_authorization": false,
+    "new_evaluation_primary_rule_frozen_before_outcomes": true
+  },
+  "monte_carlo": {
+    "samples_per_object": 100000,
+    "base_seed": 20260916,
+    "query_future_outcomes_used_for_sampling_or_precision": false,
+    "historical_main_results_replaced": false
+  },
+  "cost": {
+    "normalized_action_well_cost": 0.01,
+    "action_cost_two_wells": 0.02,
+    "reference_regimes": ["existing_reusable", "new_acquisition"],
+    "reference_cost_amortization_required": true,
+    "training_controls_and_verification_costs_reported_separately": true
+  },
+  "optional_modules": {
+    "biology": {"enabled": false, "off_baseline": "complete current core; not historical GENERIC probability readout"},
+    "jepa": {"enabled": false, "off_baseline": "complete current core"},
+    "activation_thresholds_validated_across_datasets": false
+  },
+  "required_comparators": [
+    "same_radial_model_lambda0", "same_STATE50_Gaussian_lambda0.2",
+    "original_STATE50_Gaussian_lambda0", "same_budget_uniform_random",
+    "stop_all", "add_two_all_budget_unmatched_reference"
+  ],
+  "remaining_before_new_outcomes": [
+    "new cohort and exposure history",
+    "chemistry and experimental dependence groups",
+    "role-specific identity manifests and legal reference bank",
+    "feature compatibility and predeclared training/adaptation recipe",
+    "single deployment fitted state and calibrated radial CDF",
+    "evaluation design and valid dependence-aware inference; no old iid CP substitution"
+  ]
+}
