@@ -2,6 +2,11 @@
 
 Code accompanying **Targeted repeat measurements improve the value and cross-site agreement of phenotypic profiles**.
 
+This source folder is refreshed to the final manuscript of 25 September 2026. It includes the exact-geometry consistency tests, the post-hoc EU task-matched measurement comparison, and plotting code with the current Figure 1–7 numbering. Data and fitted artifacts belong in the separate companion folder, `CORE-Repeat-data`.
+
+- Data and frozen-model record: [10.5281/zenodo.22927401](https://doi.org/10.5281/zenodo.22927401).
+- Code repository: [JIABI/CORE-Repeat](https://github.com/JIABI/CORE-Repeat).
+
 This repository contains the actual measurement models, direct-prediction comparators, acquisition evaluation, and regression tests used in the study. The Python package retains its development name, `opal2`. CORE is the joint measurement model studied in the manuscript; optional biology and representation modules are experimental comparators, not enabled components of the frozen confirmation policy.
 
 ## Start here
@@ -47,6 +52,7 @@ See `docs/RELEASE_VALIDATION.md` for the actual release checks and any skipped d
 | Frozen confirmation fit, load and inference | `opal2/r4_final_model.py` |
 | Ridge, ExtraTrees and HistGB direct comparators | `opal2/eu_r2_direct_baselines.py` |
 | Conditional-quantile HistGB distribution and scoring | `opal2/quantile_distribution.py`, `opal2/quantile_direct_evaluation.py` |
+| Nonnegative measurement-quantile laws and frozen observable replay | `opal2/observable_quantile_distribution.py`, `opal2/measurement_forecast_replay.py` |
 | Identity-aware selection, missing-outcome bounds and resampling | `opal2/r4_evaluation.py`, `opal2/r4_confirmatory_metrics.py` |
 | Independent-site evaluation endpoint | `opal2/r4_external_endpoint.py` |
 | Joint dependence ablation | `opal2/m4_dependence_ablation.py` |
@@ -86,8 +92,12 @@ The companion data package provides the release data manifest, schemas, provenan
 - `paper/`: figure and saved-result analysis tools prepared for this release.
 - `tests/`: algorithm, data isolation, numerical and policy-evaluation regression tests.
 
-The confirmation cohort and its model comparisons were fixed before its outcomes were examined. Reproducing existing analyses is not a new independent confirmation. The paper's figure/table labels, rather than dated development run names, are the primary guide to the final evidence.
+The original confirmation models and acquisition lists were fixed before future outcomes were examined. The EU direct-measurement comparison was specified after confirmation outcomes were opened and is explicitly post hoc; it leaves those original models and lists unchanged. Its primary arm is calibrated direct quantile prediction (CAL), with RAW secondary. The separate development gain-quantile comparison retains RAW as primary and CAL as secondary. Reproducing saved analyses is not a new independent confirmation.
+
+For figures and saved-result checks, set `OPAL2_DATA_ROOT` to the companion `CORE-Repeat-data` directory and follow `paper/README.md`. The paper's current figure/table labels, rather than dated development run names, identify the final evidence.
 
 ## Licence and citation
 
-See `LICENSE_NOTES.md` for release licensing status and `THIRD_PARTY_NOTICES.md` for dependencies and upstream resources. A manuscript citation and permanent data/code identifiers should be added when assigned; none is invented in this package.
+The authors' original software contributions are provided under the MIT licence in `LICENSE`, subject to the material and path exclusions in `LICENSE_NOTES.md`. This grant does not relicense third-party data, annotations, trained artifacts or restricted derivatives. See `THIRD_PARTY_NOTICES.md` for those sources.
+
+Cite the data record [10.5281/zenodo.22927401](https://doi.org/10.5281/zenodo.22927401) and identify the [CORE-Repeat repository](https://github.com/JIABI/CORE-Repeat) revision used. The dataset DOI is not an article DOI. The manuscript title above identifies the associated study.

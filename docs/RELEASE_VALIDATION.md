@@ -1,57 +1,60 @@
 # Release validation
 
-Validation completed for the 24 September 2026 staging release. These checks apply to the code, not to a new scientific experiment.
+The 25 September 2026 source-folder refresh was checked offline against the final companion `CORE-Repeat-data` folder. These checks validate packaging and saved-result reproduction; they do not constitute a new scientific experiment.
 
-## Executed checks
+## Checks executed for this refresh
 
 | Check | Result |
 |---|---|
-| Complete repository regression suite | **1,546 passed, 8 skipped, 12 subtests passed**; no failures |
-| Suite duration in the tested environment | 119.18 seconds |
-| Build an installable wheel with no dependency changes | Passed; `opal2_measurement_model-0.2.0-py3-none-any.whl` |
-| Install that wheel into a separate target and import from outside the source tree | Passed |
-| Import current mean, distribution, confirmation and quantile APIs from installed wheel | Passed |
-| Historical CLI help and both current fit/score wrapper help commands | Passed |
-| Load the actual saved final CORE/HistGB/distribution state using the release code | Passed; 904 development identities, CORE in evaluation mode |
-| Original core algorithm preservation | All original Python ASTs match after removing only the recorded protocol-path and version-string packaging edits |
-| Author-machine absolute paths or credential-pattern scan in distributed core/scripts/tests/docs/protocols | No matches |
-| Documented Python file references | All explicit file references resolve |
+| Focused numerical and wrapper regression tests | 75 passed in 4.22 seconds; no failures or skips |
+| Python syntax | All 489 Python files parsed successfully |
+| Scientific implementation preservation | Core-module ASTs match the canonical analysis, allowing only the pre-existing historical-protocol path relocation and version-string correction |
+| Newly included EU measurement modules, runner and tests | Byte-identical to the canonical analysis sources |
+| EU measurement runner, final fit wrapper, prepared-query score wrapper and figure driver help | Passed |
+| Confirmation and development saved-data verification | Passed for 13,141 development observations and 1,520 complete confirmation outcomes |
+| Confirmation ledger and frozen selections | 1,539 qualified; 1,527 eligible first profiles; 1,520 observed gains; 192 selections per policy |
+| EU task-matched measurement comparison | Saved CAL-primary paired comparisons and 21.8% nominal-95%-interval width reduction verified; unresolved CRPS contrast retained |
+| Final table index | 3 main plus 61 supplementary numbered tables, including main Table 3 |
+| Figure reproduction | All 7 main and 5 supplementary figures rendered from packaged saved inputs; scripts reported no out-of-canvas text issues |
+| NULL-type reproduction | Both exported CSVs are byte-identical to the companion source files |
+| Four-resource role-rotation table | Reproduced 13,141 observations; maximum cell difference from saved table 1.1103 × 10⁻¹⁶ |
+| Package contents | No datasets, fitted weights, generated figures, caches or raw logs in the code folder |
+| Author-machine paths and credential-pattern scan | No matches in distributed code or documentation |
 
-The numerical test environment was Python 3.12.14 on macOS arm64, CPU, using `requirements-tested.txt`. The full test command was:
+The maximum absolute difference between gains recomputed from released measurements and saved publication gains was **1.4433 × 10⁻¹⁵**. The NULL-type helper reproduced the unchanged frozen selections; it did not fit models or select new objects.
+
+The focused numerical tests used the existing Python 3.12.14 macOS arm64 CPU environment recorded in `requirements-tested.txt`:
 
 ```bash
-OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 \
-  python -m pytest -q -rs
+PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 \
+python -m pytest -q -rs -p no:cacheprovider \
+  tests/test_gram_geometry.py \
+  tests/test_measurement_forecast_replay.py \
+  tests/test_observable_quantile_distribution.py \
+  tests/test_quantile_distribution.py \
+  tests/test_quantile_direct_evaluation.py \
+  tests/test_m4_dependence_ablation.py \
+  tests/test_r4_evaluation.py \
+  tests/test_r4_confirmatory_metrics.py \
+  tests/test_release_wrappers.py
 ```
 
-## Skipped tests
+Rendering used the existing Python 3.12.0 environment with matplotlib 3.10.9, NumPy 2.1.3, pandas 3.0.3, SciPy 1.17.1, Pillow 12.2.0 and RDKit 2026.03.5. No environment was installed or enlarged for this refresh. Figure dependencies are optional (`pip install -e '.[figures]'`); the numerical-only environment does not itself contain matplotlib. Typography can vary with local fonts. Generated validation outputs were kept outside the code folder.
 
-Eight pre-existing tests require optional local historical data/checkpoints and were skipped in the clean source folder:
+## Scope and remaining requirements
 
-- One dual-branch saved-cell isolation test.
-- Five saved STATE50 transfer checks.
-- One JUMP original-development metadata check.
-- One explicit `OPAL2_LEGACY_ROOT` real-archive integration test.
+- This refresh reused the prior staged package and ported current paper scripts through its existing packaging utility. Paper-script changes are restricted to input/output paths, pre-exported saved plot inputs and local canvas checks. Current manuscript Figure 1–7 selectors are documented in `paper/README.md`.
+- The full repository regression suite, wheel-build/install check and every historical training pipeline were **not rerun** for this refresh. The focused tests above cover geometry, the added EU measurement comparison, dependence ablation, confirmation statistics and release wrappers.
+- Exact EU measurement re-execution uses scikit-learn 1.9.1, the recorded prepared/frozen inputs, and a separate writable analysis tree; see `docs/REPRODUCTION.md`. It is not part of the quick saved-result checks.
+- Full historical reproduction still requires the upstream raw archives and recorded inputs not included in the companion release. Historical POSIX/background modes have not been validated on Windows or retested on Linux.
+- This local code folder is not a remote publication. Original software is MIT-licensed only within the scope of `LICENSE_NOTES.md`; third-party notices and reserved source-dependent paths retain their stated terms. The mixed-rights companion data package requires a separate author licensing decision before public redistribution.
 
-The ordinary numerical, schema, fitting-isolation, selection, missingness, covariance, calibration and resampling tests ran. Skips were not converted into passes. The separate real final-model load check succeeded without copying those historical test inputs into the code repository.
+## Historical validation: 24 September staging release
 
-## Packaging changes
+The preceding staging release recorded **1,546 passed, 8 skipped and 12 subtests passed** in 119.18 seconds under Python 3.12.14/macOS arm64. It also passed a no-dependency-change wheel build, installation into a separate target, installed API imports, CLI/wrapper help and loading the actual saved final CORE/HistGB/distribution state for 904 development identities. These are retained historical results, not claims that those checks were repeated on 25 September.
 
-- Historical scientific protocol files are organised under `protocols/historical/`; quoted paths in callers and one corresponding test fixture were updated. Their scientific contents and algorithms were not changed.
-- The package's internal version string now agrees with the pre-existing project version, 0.2.0.
-- `python -m opal2` forwards to the existing CLI.
-- `scripts/score_prepared_queries.py` is a new thin, tested wrapper around the original frozen inference function. It does not alter model settings, sample counts, seeds, action costs or policy ranking.
-- Joblib and threadpoolctl are explicit direct dependencies; optional figure dependencies are separated in project metadata.
-- Author-workstation background launch wrappers and local-file indexing scripts were excluded. Archived scientific orchestration modules remain available, with their platform/input requirements documented.
+Its eight skipped tests required optional historical inputs: one dual-branch saved-cell isolation test, five saved STATE50 transfer checks, one JUMP development-metadata check and one explicit `OPAL2_LEGACY_ROOT` archive integration test. They were not counted as passes.
 
-The release check did not rerun all biological training, Monte Carlo predictions, or create a new confirmation cohort. Historical background modes were not tested on Linux or Windows. The companion data and `paper/` tools support saved-result reproduction separately from full model fitting.
+That release rendered all seven main and five supplementary figures, reproduced the four-resource role-rotation table with zero numerical difference, and verified the same confirmation ledger and saved gains. Its table export covered the then-current two main and 56 supplementary tables; that historical table count is superseded by the **three main and 61 supplementary tables** verified above.
 
-## Paper reproduction checks
-
-- All 7 main figures and 5 supplementary figures rendered from the extracted-data layout using the portable figure driver. The release scripts do not require the authors' workstation paths or private figure skills. The rendered-canvas checks reported no text outside the drawn canvas.
-- The two main and 56 supplementary tables have released cell exports and complete source indices. All listed data and code paths resolve.
-- Recomputing the four-role gain from 13,141 development observations and 1,520 observed confirmation outcomes agrees with the saved publication values to below 1.5e-15 maximum absolute error. The 1,539 / 1,527 / 1,520 confirmation ledger and 192 selections per policy were checked.
-- The portable role-rotation diagnostic reproduces all four resources' saved Supplementary Table 2 source cells, with zero maximum numerical difference in the tested environment.
-- Original manuscript figure PDF/SVG files are retained in the data package as reference renders. Typography in new renders may depend on locally available fonts.
-
-The small canvas helper excludes undrawn out-of-range tick artists from its warnings. That change affects visual QA only, not plotted points, axis limits or numerical results.
+Packaging changes inherited from that release include the `protocols/historical/` relocation, version 0.2.0 alignment, the `python -m opal2` entry point, the tested prepared-query scoring wrapper, explicit joblib/threadpoolctl dependencies, separated optional plotting dependencies and exclusion of author-workstation launch/indexing helpers. Original scientific algorithms, settings, sample counts, seeds, action costs and policy rankings were retained.

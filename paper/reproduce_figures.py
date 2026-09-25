@@ -6,12 +6,12 @@ import sys
 
 COMMANDS = {
     "1": ["plot_measurement_fig1.py"],
-    "2": ["plot_data_rich_results.py", "2"],
-    "3": ["plot_m3_m4_controls.py"],
-    "4": ["plot_m4_measurement_coverage.py"],
-    "5": ["plot_data_rich_results.py", "5"],
-    "6": ["plot_data_rich_fig3.py"],
-    "7": ["plot_data_rich_results.py", "4"],
+    "2": ["plot_data_rich_results.py", "4"],
+    "3": ["plot_data_rich_results.py", "2"],
+    "4": ["plot_m3_m4_controls.py"],
+    "5": ["plot_m4_measurement_coverage.py"],
+    "6": ["plot_data_rich_results.py", "5"],
+    "7": ["plot_data_rich_fig3.py"],
     "S3": ["plot_figures.py"],
     "S5": ["plot_layout_diagnostics_20260923.py"],
 }

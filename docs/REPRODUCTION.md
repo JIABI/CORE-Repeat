@@ -88,8 +88,36 @@ The dated runners document how the experiments were executed. For orientation:
 | Conditional-quantile HistGB | `scripts/run_c3_quantile_histgb_20260922.py` |
 | Amplitude-only controls | `scripts/m3_amplitude_controls_20260922.py` |
 | Dependence ablation | `scripts/run_m4_dependence_ablation_20260922.py` |
+| EU task-matched measurement comparison | `scripts/run_eu_direct_measurement_20260924.py`; `protocols/EU_direct_measurement_20260924.md` |
 
 Many runners validate their specific original cohort sizes, fixed configurations, input schemas and saved-state history. Those checks are deliberate and were not disabled to make arbitrary inputs run. Some older experiments execute a copied `source_snapshot` and compare it with the source path in the run manifest. They need their original preparation step or a documented reconstruction of its input tree.
+
+## EU direct-measurement comparison and geometry checks
+
+Main Table 3 and Supplementary Note 16 compare frozen CORE with models trained directly on three nonnegative scalar observables, `log(1 + ||(a+b)/2||² / ||X||²)`, for `(a,b) = (Z1,Z2), (Z1,V), (Z2,V)`. CAL is the primary comparator here because both CAL and CORE use the disjoint distribution-calibration labels; RAW is secondary. This post-hoc comparison uses 1,520 complete confirmation objects and does not change any original CORE fit or acquisition list.
+
+The companion `source_data/eu_direct_measurement_20260924/` contains the finished summaries, paired intervals and per-object predictions. Check those alongside the rest of the release without fitting:
+
+```bash
+export OPAL2_DATA_ROOT=/absolute/path/to/CORE-Repeat-data
+python paper/verify_release_data.py
+python -m pytest -q tests/test_gram_geometry.py \
+  tests/test_measurement_forecast_replay.py \
+  tests/test_observable_quantile_distribution.py
+```
+
+The geometry tests check agreement with explicit profile calculations, invariance to common rotation and scale, and different measurement observables under identical two-well gain. These are software checks of the representation; they are not additional empirical results.
+
+For exact historical re-execution, use a separate writable analysis checkout. Copy the companion `research/reports/eu_core_development_20260917_v1/prepared_data_cc904/` and `research/runs/r4_confirmation_20260921_v1/` to the corresponding `reports/` and `runs/` paths there. Keep scikit-learn at **1.9.1**. The following is a full computation, not a quick release check:
+
+```bash
+python scripts/run_eu_direct_measurement_20260924.py --help
+python scripts/run_eu_direct_measurement_20260924.py run
+```
+
+`run` fits 171 quantile regressors, replays 100,000 frozen CORE draws per eligible object, and evaluates 10,000 paired resamples. It writes `runs/eu_measurement_direct_20260924_v1/` and `reports/eu_measurement_direct_20260924_v1/`. The unchanged frozen prediction directory must contain its query metadata, coordinate preprocessing, query-specific distribution, prediction manifest and cached original Gamma draws. Saved direct-model checkpoints and predictions are also supplied under the companion `research/runs/eu_measurement_direct_20260924_v1/`; copying these into the working tree permits the runner's existing resume/evaluation modes. The `evaluate` action recomputes paired intervals from finished predictions without fitting or replay, and still requires the matching recorded environment and protocol.
+
+The measurement runner uses POSIX file locking (`fcntl`) and the two-worker foreground process pool. Its complete historical run was not repeated during this source-folder refresh.
 
 The numerical package is Python. Several orchestration helpers additionally use POSIX process tools, `fcntl`, `resource`, or macOS `caffeinate` for background execution. Use foreground execution where offered. The release does not claim that those historical background launch modes are portable to Windows or have been retested on Linux. Author-workstation `start_*` wrappers and local-file indexers are not included.
 

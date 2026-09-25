@@ -1,4 +1,4 @@
-"""Fig. 3: association versus predictive increment; no new fitting/resampling.
+"""Current Figure 7: association versus predictive increment; no new fitting/resampling.
 
 Figure contract: actual pair/object observations, all 20 reference assignments,
 and all 20 pairs of simulated realizations. No universal learnability claim.

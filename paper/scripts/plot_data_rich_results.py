@@ -1,4 +1,8 @@
-"""Saved observations, fixed policies: figures 2, 4 and 5. No fitting/sampling."""
+"""Current Figures 3, 2 and 6 from saved observations; no fitting/sampling.
+
+Historical command selectors 2, 4 and 5 produce current Figures 3, 2 and 6.
+Use paper/reproduce_figures.py to select figures by their manuscript numbers.
+"""
 from pathlib import Path
 import json
 import sys
@@ -218,20 +222,30 @@ def scatter_all(ax,q,x,y):
 
 def figure4():
     q=pd.read_csv(DATA/'measurement_fig4_objects.csv')
-    fig=plt.figure(figsize=(183/25.4,174/25.4))
+    role_source=DATA/'v11_role_forecasts'
+    objects=pd.read_csv(role_source/'object_contrasts.csv')
+    layouts=pd.read_csv(role_source/'layout_forecasts.csv')
+    object_metrics=pd.read_csv(role_source/'object_metrics.csv').set_index('readout').loc['discordance']
+    layout_metrics=pd.read_csv(role_source/'layout_metrics.csv').set_index('readout').loc['discordance']
+    sensitivity=pd.read_csv(role_source/'layout_contrast_sensitivity.csv')
+    leave_one=sensitivity.loc[sensitivity.analysis.eq('leave_one_layout_out')]
+    assert len(objects)==1520 and len(layouts)==7 and len(leave_one)==7
+    assert np.isfinite(objects[['point_discordance','real_discordance']]).all().all()
+    assert np.isfinite(layouts[['point_discordance','real_discordance']]).all().all()
+    fig=plt.figure(figsize=(183/25.4,206/25.4))
     fig.text(.08,.982,'Targeted repeats improve cross-site phenotypic agreement',fontsize=10,weight='bold',va='top')
-    fig.text(.08,.95,'Frozen confirmation: 1,539 candidates · 192 actions per policy · 384 added wells',fontsize=8)
-    selection_legend(fig,.927)
+    fig.text(.08,.955,'Frozen confirmation: 1,539 candidates · 192 actions per policy · 384 added wells',fontsize=8)
+    selection_legend(fig,.935)
     counts={}
-    for ds,letter,pos in [('MEDINA','a',[.10,.553,.38,.302]),('USC','b',[.60,.553,.38,.302])]:
+    for ds,letter,pos in [('MEDINA','a',[.10,.673,.38,.205]),('USC','b',[.60,.673,.38,.205])]:
         ax=fig.add_axes(pos);title(ax,letter,ds)
         counts[ds]=scatter_all(ax,q,ds+'_before',ds+'_after')
         limits=(-.58,.82);ax.plot(limits,limits,lw=.9,ls='--',color=C['gray'],zorder=1)
         ax.set(xlim=limits,ylim=limits,xticks=[-.4,0,.4,.8],yticks=[-.4,0,.4,.8],
                xlabel='Agreement before additional wells',ylabel='Agreement after additional wells')
         ax.text(.03,.95,f'n = {counts[ds]:,} observed pairs',transform=ax.transAxes,va='top',fontsize=7.5)
-        ax.text(.64,.13,'No change',transform=ax.transAxes,fontsize=7,color=C['gray'],rotation=40)
-    ax=fig.add_axes([.10,.145,.38,.277]);title(ax,'c','Distribution of cross-site gains')
+        ax.text(.64,.13,'No change',transform=ax.transAxes,fontsize=7,color=C['gray'],rotation=40,rotation_mode='anchor')
+    ax=fig.add_axes([.10,.386,.38,.205]);title(ax,'c','Distribution of cross-site gains')
     for col,label,color,ls in [(None,'All observed',C['gray'],':'),
                               ('CORE_selected','CORE selected',C['core'],'-'),
                               ('HISTGB_CAL_selected','HistGB selected',C['hist'],'--')]:
@@ -243,14 +257,57 @@ def figure4():
     ax.legend(loc='lower right',fontsize=7,handlelength=1.5)
     ax.text(.50,.43,'CORE: +0.137 selected\n+0.047 not selected',transform=ax.transAxes,fontsize=7.5,
             color=C['core'],va='top');grid(ax)
-    ax=fig.add_axes([.60,.145,.38,.277]);title(ax,'d','Gain across the two external sites')
+    ax=fig.add_axes([.60,.386,.38,.205]);title(ax,'d','Gain across the two external sites')
     counts['paired_sites']=scatter_all(ax,q,'MEDINA_delta','USC_delta')
     ax.axhline(0,color=C['gray'],lw=.7,ls=':');ax.axvline(0,color=C['gray'],lw=.7,ls=':')
     ax.set(xlim=(-.45,.85),ylim=(-.45,.85),xticks=[-.4,0,.4,.8],yticks=[-.4,0,.4,.8],
            xlabel='MEDINA agreement gain',ylabel='USC agreement gain')
     ax.text(.035,.95,'All 1,515 paired observations',transform=ax.transAxes,fontsize=7.5,va='top')
-    fig.text(.10,.061,'Paired-site endpoint available: CORE 189/192; HistGB 191/192.',fontsize=7.5)
-    fig.text(.10,.034,'Selected/non-selected curves describe the frozen choices; paired-site bounds retain missing outcomes (Table 2).',fontsize=7)
+    fig.text(.05,.323,'e',fontweight='bold',fontsize=10,va='bottom')
+    fig.text(.10,.323,'Frozen forecasts track measurement-role contrast',fontweight='bold',fontsize=8.5,va='bottom')
+    ax=fig.add_axes([.10,.083,.38,.187])
+    ax.set_title('Objects (n = 1,520)',loc='left',fontsize=8,fontweight='bold',pad=6)
+    ax.scatter(objects.point_discordance,objects.real_discordance,s=5,color=C['core'],
+               alpha=.27,lw=0,rasterized=True)
+    limits=(-.42,1.45)
+    ax.plot(limits,limits,color=C['gray'],ls='--',lw=.85,zorder=1)
+    ax.set(xlim=limits,ylim=limits,xticks=[0,.5,1],yticks=[0,.5,1],
+           xlabel='Frozen forecast role contrast',ylabel='Observed role contrast')
+    ax.text(.965,.10,f'Spearman ρ = {object_metrics.spearman_rho:.3f}',
+            transform=ax.transAxes,va='bottom',ha='right',fontsize=7.5)
+    ax=fig.add_axes([.60,.083,.38,.187])
+    ax.set_title('Layout means (n = 7)',loc='left',fontsize=8,fontweight='bold',pad=6)
+    ordinary=~layouts.layout.isin(['B1004','B1007'])
+    ax.scatter(layouts.loc[ordinary,'point_discordance'],layouts.loc[ordinary,'real_discordance'],
+               s=23,facecolor=C['core'],edgecolor='white',lw=.45,zorder=4)
+    for name,marker,offset in [('B1004','s',(7,-12)),('B1007','^',(7,2))]:
+        row=layouts.loc[layouts.layout.eq(name)].iloc[0]
+        ax.scatter([row.point_discordance],[row.real_discordance],s=34,marker=marker,
+                   facecolor=C['core'],edgecolor=C['ink'],lw=.65,zorder=5)
+        ax.annotate(name,(row.point_discordance,row.real_discordance),xytext=offset,
+                    textcoords='offset points',fontsize=7,color=C['ink'],va='center')
+    ax.plot([-.055,.34],[-.055,.34],color=C['gray'],ls='--',lw=.85,label='1:1')
+    line_x=np.array([layouts.point_discordance.min(),layouts.point_discordance.max()])
+    ax.plot(line_x,layout_metrics.observed_on_predicted_intercept+
+            layout_metrics.observed_on_predicted_slope*line_x,color=C['ink'],lw=1,
+            label='Descriptive OLS')
+    ax.set(xlim=(-.055,.34),ylim=(-.055,.56),xticks=[0,.1,.2,.3],yticks=[0,.2,.4],
+           xlabel='Frozen forecast role contrast',ylabel='Observed role contrast')
+    ax.text(.035,.95,f'Pearson r = {layout_metrics.pearson_r:.3f}\nOLS slope = {layout_metrics.observed_on_predicted_slope:.2f}',
+            transform=ax.transAxes,va='top',fontsize=7.5,linespacing=1.4)
+    ax.legend(loc='lower right',fontsize=7,handlelength=1.5,labelspacing=.35)
+    fig.text(.10,.018,
+             f'Single-layout-omission sensitivity (no refitting): r = {leave_one.pearson_r.min():.3f}–{leave_one.pearson_r.max():.3f}.',
+             fontsize=7)
+    counts.update(role_objects=len(objects),role_layouts=len(layouts),
+                  role_object_spearman=float(object_metrics.spearman_rho),
+                  role_layout_pearson=float(layout_metrics.pearson_r),
+                  role_layout_ols_slope=float(layout_metrics.observed_on_predicted_slope),
+                  role_leave_one_layout_out_pearson_range=[float(leave_one.pearson_r.min()),float(leave_one.pearson_r.max())],
+                  role_contrast='Mean action-trio cosine minus mean verifier-link cosine',
+                  role_forecast='Plug-in predicted mean geometry; not the expected cosine',
+                  role_source_directory='source_data/v11_role_forecasts',
+                  role_ols='Descriptive observed-on-forecast fit from saved statistics; no recalibration')
     export(fig,'fig4_confirmation',counts)
 
 def identified_bar(ax,x,low,high,color,width=.55):

@@ -1,4 +1,4 @@
-"""Figure 6: saved scalar measurement-observable coverage, not profile coverage."""
+"""Current Figure 5: saved scalar measurement-observable coverage, not profile coverage."""
 from pathlib import Path
 import json
 import matplotlib

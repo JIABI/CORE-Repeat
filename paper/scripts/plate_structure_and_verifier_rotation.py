@@ -9,7 +9,7 @@ Role rotations reuse the same wells and are not independent remeasurements.
 Usage:
   python paper/scripts/plate_structure_and_verifier_rotation.py --check
   python paper/scripts/plate_structure_and_verifier_rotation.py --output out.csv
-Set OPAL2_DATA_ROOT or pass --data-root to the extracted zenodo_data directory.
+Set OPAL2_DATA_ROOT or pass --data-root to the companion CORE-Repeat-data directory.
 """
 from __future__ import annotations
 
@@ -92,7 +92,7 @@ def calculate(data_root):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    default=Path(__file__).resolve().parents[3]/'zenodo_data'
+    default=Path(__file__).resolve().parents[4]/'zenodo'/'CORE-Repeat-data'
     parser.add_argument('--data-root',type=Path,default=Path(os.environ.get('OPAL2_DATA_ROOT',default)))
     parser.add_argument('--output',type=Path)
     parser.add_argument('--check',action='store_true',help='Compare all cells with the released original table.')

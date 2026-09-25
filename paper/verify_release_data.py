@@ -58,12 +58,34 @@ def main():
             assert m.sum() == 192 and (eligible[m]).all()
             np.testing.assert_array_equal(m, q[policy + "_selected"])
     tables = pd.read_csv(DATA_ROOT / "tables/table_index.csv")
-    assert len(tables) == 58
+    assert len(tables) == 64
+    main_tables = tables.loc[tables.document == "main"].sort_values("table_number")
+    assert main_tables.primary_label.tolist() == [
+        "tab:r4_primary", "tab:r2_four_policy", "tab:eu_measurement_main"]
+    assert int((tables.document == "supplementary").sum()) == 61
     pairs = pd.read_csv(DATA / "plot_inputs/fig6_residual_pairs.csv")
     assert len(pairs) == 93558 and (pairs.target_overlap > 0).sum() == 3088
     checks["confirmation"] = {"qualified": 1539, "eligible_X": 1527, "observed_gamma": 1520,
         "selected_each": 192, "gamma_max_abs_error": float(np.nanmax(np.abs(observed-q.gamma)))}
-    checks["display_tables"] = 58
+    folder = DATA / "eu_direct_measurement_20260924"
+    summary = pd.read_csv(folder / "summary.csv")
+    family = summary.loc[summary.target == "three_target_mean"].set_index("arm")
+    assert set(family.index) == {"CORE", "CAL", "RAW"} and (summary.n == 1520).all()
+    paired = pd.read_csv(folder / "paired_intervals.csv")
+    primary = paired.loc[(paired.comparator == "CAL") & (paired.target == "three_target_mean")]
+    assert set(primary.resampling) == {"chemical_identity", "library_layout"}
+    assert primary.primary.all() and (primary.repetitions == 10000).all()
+    np.testing.assert_allclose(primary.crps_difference,
+        family.loc["CAL", "crps"] - family.loc["CORE", "crps"], rtol=0, atol=1e-14)
+    assert (primary.difference_lower < 0).all() and (primary.difference_upper > 0).all()
+    assert (primary.width95_lower > 0).all()
+    width_reduction = 100 * (1 - family.loc["CORE", "width_95"] / family.loc["CAL", "width_95"])
+    assert round(width_reduction, 1) == 21.8
+    assert round(100 * family.loc["CORE", "coverage_95"], 1) == 93.9
+    assert round(100 * family.loc["CAL", "coverage_95"], 1) == 94.2
+    checks["eu_direct_measurement"] = {"complete_objects": 1520, "primary": "CAL minus CORE",
+        "nominal_95_width_reduction_percent": float(width_reduction), "post_hoc": True}
+    checks["display_tables"] = {"main": 3, "supplementary": 61, "total": 64}
     checks["status"] = "PASS"
     (QA / "release_data_validation.json").write_text(json.dumps(checks, indent=2) + "\n")
     print(json.dumps(checks, indent=2))

@@ -5,9 +5,11 @@ This map distinguishes the final measurement model from optional development exp
 | Evidence family | Core calculation | Checks |
 |---|---|---|
 | Repeated-profile geometry and realised gain | `gram_geometry.py`, `replicate_diagnostics.py`, `diagnostics.py` | `test_gram_geometry.py`, `test_replicate_diagnostics.py`, `test_observed_diagnostics_r2.py` |
+| Exact normalized-Gram observables and gain-preserving counterexample | `gram_geometry.py` | `test_gram_geometry.py`: explicit-profile correspondence, invariance and counterexample |
 | CORE conditional mean | `eu_core_training.py`, `hierarchical_stability_ridge.py`, `state_biology_kernel.py` | `test_eu_core_training.py`, `test_state_biology_kernel.py` |
 | Conditional joint error and empirical radius | `conditional_joint_error.py`, `eu_core_distribution.py`, `empirical_radial.py` | `test_conditional_joint_error.py`, `test_eu_core_distribution.py`, `test_empirical_radial.py` |
 | Direct prediction and quantile control | `eu_r2_direct_baselines.py`, `quantile_distribution.py`, `quantile_direct_evaluation.py` | `test_eu_r2_direct_baselines.py`, `test_quantile_distribution.py`, `test_quantile_direct_evaluation.py` |
+| Main Table 3 / Supplementary Note 16: EU direct measurement comparison | `observable_quantile_distribution.py`, `measurement_forecast_replay.py`, `scripts/run_eu_direct_measurement_20260924.py` | `test_observable_quantile_distribution.py`, `test_measurement_forecast_replay.py`; protocol `protocols/EU_direct_measurement_20260924.md` |
 | Measurement-dependence ablation | `m4_dependence_ablation.py`, `m4_dependence_summary.py` | `test_m4_dependence_ablation.py` |
 | Optional reference-summary/representation experiments | `dual_branch_biology.py`, `support_gated_biology.py`, `conditional_state_representation.py` | Corresponding `test_*.py` files; unsupported/off-state invariants |
 | Cross-dose association and response-only comparisons | `crossdose_response.py`, `relation_variance_components.py`, dated cross-dose runners | Corresponding tests and the saved-output analysis in the companion data |
@@ -17,6 +19,6 @@ This map distinguishes the final measurement model from optional development exp
 | Cross-site morphology endpoint | `r4_external_endpoint.py` | `test_r4_external_endpoint.py` |
 | Amplitude-only controls | `m3_amplitude_controls.py` | `test_m3_amplitude_controls.py` |
 
-Paths in the calculation column are under `opal2/` unless stated otherwise; test paths are under `tests/`. The final statistical supplement comparing both frozen policies with random allocation is also included among `paper/` tools. It keeps a within-resample same-budget random comparator and is distinct from reranking the frozen original cohort.
+Paths in the calculation column are under `opal2/` unless stated otherwise; test paths are under `tests/`. The final statistical supplement comparing both frozen policies with random allocation is also included among `paper/` tools. It keeps a within-resample same-budget random comparator and is distinct from reranking the frozen original cohort. See `paper/README.md` for the current figure-number map; the filename numbers preserve earlier plotting history.
 
 Unit tests use synthetic numerical fixtures to test algebra, numerical implementation, access boundaries and invariance. They do not replace the actual biological data in the paper. Results reproduction uses the separate released source-data and research artifacts.

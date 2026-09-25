@@ -1,6 +1,6 @@
 # Third-party notices and data-license boundaries
 
-This repository contains the study's computational implementation and reproduction utilities. Its software license, once confirmed by the authors, applies only to rights they may grant. It does not relicense upstream datasets, third-party code, fitted artifacts or outputs subject to other terms. No author license is granted by this notice.
+This repository contains the study's computational implementation and reproduction utilities. The authors' MIT grant is in `LICENSE`, with material and path exclusions in `LICENSE_NOTES.md`. It applies only to rights they may grant and does not relicense upstream datasets, third-party code, fitted artifacts or outputs subject to other terms. This notice provides attribution and scope information, not an additional licence grant.
 
 Dependencies should be installed from their original distributions and retain their licenses. Copies of upstream notices in `third_party_licenses/` document sources used by the reproduction workflow; their presence does not mean that the entire corresponding upstream software project is bundled here.
 
@@ -18,7 +18,7 @@ The study selected and transformed licensed profiles, fitted and evaluated model
 
 The custom EULA's definition of derivative technology is broad. Sharing is subject to section 7, including essentially equivalent terms and section 3 purpose restrictions; it is not unrestricted CC-BY/MIT reuse. Users acquiring RxRx3-core must read and comply with the upstream terms. Acquisition utilities must not silently represent that another user or institution has accepted them.
 
-The release-preparation package makes no determination that a blanket permissive code license resolves the treatment of RxRx3-specific modifications or trained artifacts. The authors must confirm the scope of their original-code license and the equivalent terms for applicable derivatives before public release. Data-agnostic method source and third-party dataset rights should remain distinguishable. This is a local staging notice, not an author or institutional legal certification.
+The original-code MIT grant does not resolve the treatment of RxRx3-specific modifications or trained artifacts. Dataset-specific adaptation paths reserved from that grant are listed in `LICENSE_NOTES.md`; equivalent terms for applicable derivatives remain to be resolved. This distinguishes the original-software grant from source-dependent rights without making a legal determination that the whole method is derivative.
 
 ## Separate chemical annotation terms
 

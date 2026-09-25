@@ -2,7 +2,8 @@
 
 Visual contract (2026-09-21): real five-channel images and a four-well montage
 anchor the measurement; complete gain distributions establish the costly-repeat
-decision; a compact joint-geometry guide explains the inference path and EU
+decision; a compact joint-geometry guide links the same forecast to allocation
+and measurement checks, and EU
 out-of-fold fits distinguish measurement variation from decision value.
 The unchanged full-feature profile matrix is exported separately to SI.
 Final size: 183 x 190 mm. Backend: Python.
@@ -147,7 +148,7 @@ def microscopy_axis(fig, path, left, top, side, calibration=None):
 
 
 def layout_audit(fig):
-    """Runtime text checks, plus the skill's glyph/canvas inspection if present."""
+    """Check rendered text sizes and tick overlap without external tools."""
     fig.canvas.draw()
     renderer = fig.canvas.get_renderer()
     visible = [t for t in fig.findobj(Text)
@@ -268,11 +269,10 @@ def figure1():
     matrix = display[info['roles']].to_numpy().T
     lo, hi = info['display_limits']
     assert matrix.min() >= lo and matrix.max() <= hi
-    # c: decision-time inputs -> geometric distribution -> decision readouts.
+    # c: the same joint geometry supplies allocation and measurement readouts.
     heading(fig, 4.5, 155, 'c', 'From first well to follow-up')
     boxes = [(4.5, 24, 'Available input', 'First-well profile\n+ chemistry'),
-             (32, 28, 'CORE forecast', 'Mean + joint errors\n9 coordinates'),
-             (63.5, 28.5, 'Outputs', 'Expected Γ\nP(Γ ≤ 0)')]
+             (32, 28, 'CORE forecast', 'Mean + joint errors\n9 coordinates')]
     for left, width, label, body in boxes:
         fig.add_artist(Rectangle((left / WIDTH_MM, 1 - 176 / HEIGHT_MM),
              width / WIDTH_MM, 13.5 / HEIGHT_MM, transform=fig.transFigure,
@@ -282,11 +282,35 @@ def figure1():
                 ha='center', weight='bold', color=C['blue'] if label=='CORE forecast' else C['ink'])
         text_mm(fig, left + width / 2, 167.2, body, fontsize=7.2,
                 ha='center', linespacing=1.15)
-    for start, end in [(28.5, 32), (60, 63.5)]:
-        fig.add_artist(FancyArrowPatch((start / WIDTH_MM, 1 - 169.4 / HEIGHT_MM),
-             (end / WIDTH_MM, 1 - 169.4 / HEIGHT_MM), transform=fig.transFigure,
+    outputs = [
+        (162.5, 9.5, 'Allocation', 'Expected Γ · P(Γ ≤ 0)', 163.4, 167.2),
+        (174, 14, 'Measurement checks',
+         'Between-well relationships\nDifference + average\nobservables', 175, 178.5),
+    ]
+    for top, height, label, body, label_top, body_top in outputs:
+        fig.add_artist(Rectangle((64.7 / WIDTH_MM, 1 - (top + height) / HEIGHT_MM),
+             33.5 / WIDTH_MM, height / HEIGHT_MM, transform=fig.transFigure,
+             facecolor='#FBFCFD', edgecolor=C['light'], lw=.8))
+        text_mm(fig, 81.45, label_top, label, fontsize=7.2,
+                ha='center', weight='bold')
+        text_mm(fig, 81.45, body_top, body, fontsize=7.2,
+                ha='center', linespacing=1.15)
+    fig.add_artist(FancyArrowPatch((28.5 / WIDTH_MM, 1 - 169.4 / HEIGHT_MM),
+         (32 / WIDTH_MM, 1 - 169.4 / HEIGHT_MM), transform=fig.transFigure,
+         arrowstyle='-|>', mutation_scale=6, color=C['blue'], lw=.85,
+         shrinkA=.5, shrinkB=.5))
+    # One shared junction makes both branches readouts of the existing forecast.
+    fig.lines.append(Line2D([60 / WIDTH_MM, 62.1 / WIDTH_MM],
+         [1 - 169.4 / HEIGHT_MM] * 2, transform=fig.transFigure,
+         color=C['blue'], lw=.85))
+    fig.lines.append(Line2D([62.1 / WIDTH_MM] * 2,
+         [1 - 167.25 / HEIGHT_MM, 1 - 181 / HEIGHT_MM],
+         transform=fig.transFigure, color=C['blue'], lw=.85))
+    for center_top in [167.25, 181]:
+        fig.add_artist(FancyArrowPatch((62.1 / WIDTH_MM, 1 - center_top / HEIGHT_MM),
+             (64.7 / WIDTH_MM, 1 - center_top / HEIGHT_MM), transform=fig.transFigure,
              arrowstyle='-|>', mutation_scale=6, color=C['blue'], lw=.85,
-             shrinkA=.5, shrinkB=.5))
+             shrinkA=0, shrinkB=.5))
     text_mm(fig, 5, 179.6, 'Use: budgeted selection', fontsize=7.2, color=C['blue'])
     text_mm(fig, 5, 183.5, 'Test: held-out wells and external sites', fontsize=7.2, color=C['gray'])
 
@@ -328,7 +352,8 @@ def figure1():
                    profile_features=3617, profile_bins=64,
                    profile_matrix_min=float(matrix.min()), profile_matrix_max=float(matrix.max()),
                    profile_display_limits=[lo, hi], profile_display_clipped=False,
-                   profile_location='figS_profile_example', panel_c='nine-coordinate joint-geometry inference guide',
+                   profile_location='figS_profile_example',
+                   panel_c='one nine-coordinate joint geometry: allocation and measurement-check readouts',
                    EU_predictability_pooled=pooled))
     fig.savefig(OUT / 'fig1_measurement_structure.pdf', dpi=600)
     fig.savefig(OUT / 'fig1_measurement_structure.svg', dpi=600)

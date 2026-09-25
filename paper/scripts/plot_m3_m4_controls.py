@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Plot saved amplitude controls and frozen-scatter ablation; no model fitting.
+"""Current Figure 4: saved amplitude controls and frozen-scatter ablation.
 
-Run from any directory: python scripts/plot_m3_m4_controls.py
-Inputs and outputs are resolved relative to this manuscript directory.
+Run from the repository: python paper/reproduce_figures.py 4
+Inputs use OPAL2_DATA_ROOT; output paths use the portable release settings.
+No model fitting or new predictive sampling is performed.
 """
 from pathlib import Path
 import json
